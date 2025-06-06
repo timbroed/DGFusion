@@ -1,0 +1,72 @@
+_BASE_: ../oneformer_R50_bs8_90k_muses.yaml
+  
+INPUT:
+  DATASET_MAPPER_NAME: "muses_unified"
+
+MODEL:
+  META_ARCHITECTURE: "DGFusion"
+  BACKBONE:
+    NAME: "D2SwinTransformer"
+  SWIN:
+    EMBED_DIM: 96
+    DEPTHS: [2, 2, 6, 2]
+    NUM_HEADS: [3, 6, 12, 24]
+    WINDOW_SIZE: 7
+    APE: False
+    DROP_PATH_RATE: 0.3
+    PATCH_NORM: True
+    PRETRAIN_IMG_SIZE: 224
+  WEIGHTS: "pretrained/swin_tiny_patch4_window7_224_22k.pkl"
+  PIXEL_MEAN: [123.675, 116.280, 103.530]
+  PIXEL_STD: [58.395, 57.120, 57.375]
+  CONDITION_CLASSIFIER:
+    ENABLED: True
+  FUSION:
+    TYPE: 'DepthTokenGuidedPCA'
+    QC:
+      CAT_QC_TO_QUERY: True
+      CAT_QC_TO_KEY: False
+    LEVELS: ['res5', 'res4', 'res3', 'res2']
+  FEATURE_ADAPTER:
+    ENABLED: True
+    NAME: 'MLPAdapterWithLearnableRatio'
+  DEPTH_HEAD:
+    NAME: "SemanticFPN"
+    ENABLED: True
+  TEST:
+    DEPTH_ON: True
+
+DATASETS:
+  MODALITIES:
+    CAMERA:
+      LOAD: True
+    LIDAR: 
+      LOAD: True
+      MOTION_COMPENSATION: True
+      DILATION: 
+        KERNAL: (7,7)
+    EVENT_CAMERA:
+      LOAD: True
+      DILATION: 
+        KERNAL: (3,3)
+    RADAR:
+      LOAD: True
+      MOTION_COMPENSATION: True
+      DILATION: 
+        KERNAL: (9,9)
+  PIXEL_MEAN:
+    LIDAR: [7.6631646,  9.861262,   0.23872735]
+    RADAR: [3.5392952, 8.275344,  0.       ]
+  PIXEL_STD: 
+    LIDAR: [16.53752009, 23.13748461,  1.71006056]
+    RADAR: [13.59349095, 18.27715183, 1.        ]
+
+TEST:  
+    EVAL_PERIOD: 10000 
+
+SOLVER:
+  CHECKPOINT_PERIOD: 10000
+  MAX_ITER: 180000
+  BASE_LR: 0.00018
+
+SEED: 0

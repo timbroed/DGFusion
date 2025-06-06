@@ -1,0 +1,48 @@
+_BASE_: ../oneformer_R50_bs8_90k_deliver.yaml
+
+MODEL:
+  META_ARCHITECTURE: "DGFusion"
+  BACKBONE:
+    NAME: "D2SwinTransformer"
+  SWIN:
+    EMBED_DIM: 96
+    DEPTHS: [2, 2, 6, 2]
+    NUM_HEADS: [3, 6, 12, 24]
+    WINDOW_SIZE: 7
+    APE: False
+    DROP_PATH_RATE: 0.3
+    PATCH_NORM: True
+    PRETRAIN_IMG_SIZE: 224
+  WEIGHTS: "pretrained/swin_tiny_patch4_window7_224_22k.pkl"
+  FUSION:
+    QC:
+      CAT_QC_TO_QUERY: True
+      CAT_QC_TO_KEY: False
+    LEVELS: ['res5', 'res4', 'res3', 'res2']
+    TYPE:  "DepthTokenGuidedPCA"
+  CONDITION_CLASSIFIER: 
+    ENABLED: True
+    CONDITION_TEXT_ENTRIES: ['condition', 'case', 'text']
+  DEPTH_HEAD:
+    NAME: "SemanticFPN"
+    ENABLED: True
+  TEST:
+    DEPTH_ON: True
+  
+DATASETS:
+  DELIVER:
+    RANDOM_DROP: [0., 0., 0., 0.]
+  MODALITIES:
+    ORDER: ["CAMERA", "LIDAR", "EVENT", "DEPTH"]
+    MAIN_MODALITY: "CAMERA"
+
+INPUT:
+  TASK_PROB:
+    INSTANCE: 0.66
+    SEMANTIC: 0.33
+  SIZE_DIVISIBILITY: -1
+
+SOLVER:
+  WARMUP_FACTOR: 1.0
+  WARMUP_ITERS: 0 
+  MAX_ITER: 200000
