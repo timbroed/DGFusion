@@ -193,17 +193,11 @@ If you find this project useful in your research, please consider citing:
 ```
 
 @article{broedermann2025dgfusion,
-
-  author={Br{\"o}dermann, Tim and Sakaridis, Christos and Piccinelli, Luigi and Van Gool, Luc},
-
   title={DGFusion: Depth-Guided Sensor Fusion for Robust Semantic Perception}, 
-
-  journal   = {arXiv preprint arXiv:2505.xxxxx},
-
+  author={Br{\"o}dermann, Tim and Sakaridis, Christos and Piccinelli, Luigi and Van Gool, Luc},
+  journal   = {arXiv preprint arXiv:2509.09828},
   year      = {2025}
-  
   }
-
 ```
 
 ### License:
